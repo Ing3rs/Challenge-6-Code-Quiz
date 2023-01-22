@@ -70,7 +70,8 @@ var questionScreen = document.querySelector("#questions");
 var questionTitle = document.querySelector("#question-title");
 var choices = document.querySelector("#choices"); // do I target the id or class?
 var endScreen = document.querySelector("#end-screen");
-var feedbackMsg = document.querySelector("#feedback");
+var finalScore = document.querySelector("#final-score");
+var feedbackScreen = document.querySelector("#feedback");
 var wrapper = document.querySelector(".wrapper");
 
 var currentQuestion = 0;
@@ -88,100 +89,114 @@ var highscoreRecords = [];
 
 // The startGame function is called when the start button is clicked
 function startGame() {
-    isWin = false;
-    timerCount = 75;
-    startTimer();
+  isWin = false;
+  timerCount = 75;
+  startTimer();
 
-    // hide start screen
-    startScreen.classList.add("hide");
+  // hide start screen
+  startScreen.classList.add("hide");
 
-    // show questions screen
-    questionScreen.classList.remove("hide");
+  // show questions screen
+  questionScreen.classList.remove("hide");
 
-    // start questions
-    startQuestions();
+  // set user score to 0
+  userScore = 0;
+
+  // start questions
+  startQuestions();
 }
 
 
 // The winGame function is called when the win condition is met
 function winGame() {
-    // startTitle.textContent = "YOU WON!!!";
-    // setWins() //set localstore function
-    console.log("you win") // temporary to see if working
+
+  // hide start screen
+  startScreen.classList.add("hide");
+
+  // hide questions screen
+  questionScreen.classList.add("hide");
+
+  // show end screen
+  endScreen.classList.remove("hide");
+
+  // display score
+  finalScore.textContent = userScore;
+
+  // MISSING:
+  // localstore function for initials and score
+  // push to highscoreRecords array with comma
+  // submit button goes to highscores
+
 }
 
 
 // The loseGame function is called when timer reaches 0
 function loseGame() {
-    
-    // hide content and display game over message
-    startScreen.style.display = "none";
-    var gameOver = document.createElement("h1");
-    var retryButton = document.createElement("button");
-    var highscoreButton = document.createElement("button");
 
-    gameOver.textContent = "Game over - better luck next time!";
-    retryButton.textContent = "Retry"; // needs to take user back to start
-    highscoreButton.textContent = "View highscores"; // needs to take user to highscore page
+  // hide start screen
+  startScreen.classList.add("hide");
 
-    // fix styling on all of the above
+  // hide questions screen
+  questionScreen.classList.add("hide");
 
-    wrapper.appendChild(gameOver);
-    gameOver.appendChild(retryButton);
-    gameOver.appendChild(highscoreButton);
-    
+  // show feedback screen
+  feedbackScreen.classList.remove("feedback-hide");
+
+  var gameOver = document.createElement("h1");
+  var retryButton = document.createElement("button");
+  var highscoreButton = document.createElement("button");
+
+  gameOver.textContent = "Game over - better luck next time!";
+  retryButton.textContent = "Retry"; // needs to take user back to start
+  highscoreButton.textContent = "View highscores"; // needs to take user to highscore page
+
+  // fix styling on all of the above
+
+  wrapper.appendChild(gameOver); // why doesn't feedbackScreen work?
+  gameOver.appendChild(retryButton);
+  gameOver.appendChild(highscoreButton);
+
 }
 
 
-// timer (75 seconds)
+// TIMER (75 seconds)
 
 // The setTimer function starts and stops the timer and triggers winGame() and loseGame()
 function startTimer() {
-    // Sets timer
-    timer = setInterval(function() {
-      timerCount--;
-      timerElement.textContent = timerCount;
-      if (timerCount >= 0) {
-        // Tests if win condition is met
-        if (isWin && timerCount > 0) {
-          // Clears interval and stops timer
-          clearInterval(timer);
-          winGame();
-        }
-      }
-      // Tests if time has run out
-      if (timerCount === 0) {
-        // Clears interval
+  // Sets timer
+  timer = setInterval(function () {
+    timerCount--;
+    timerElement.textContent = timerCount;
+    if (timerCount >= 0) {
+      // Tests if win condition is met
+      if (isWin && timerCount > 0) {
+        // Clears interval and stops timer
         clearInterval(timer);
-        loseGame();
+        winGame();
       }
-    }, 1000);
-  }
+    }
+    // Tests if time has run out
+    if (timerCount === 0) {
+      // Clears interval
+      clearInterval(timer);
+      loseGame();
+    }
+  }, 1000);
+}
 
 
 
 // QUESTIONS
 
 function startQuestions() {
-    
-    // check win?
-    // if (currentQuestion = quizQuestions.length && timer > 0) {
-    //     winGame();
-    // }
 
-    // // question
-    // questionTitle.innerHTML = quizQuestions[currentQuestion].question;
+  // check win
+  if (currentQuestion == quizQuestions.length) {
+    winGame()
+    isWin = true;
+    clearInterval(timer);
 
-    // // options
-    // choices.innerHTML = "";
-
-    // for (var i = 0; i < quizQuestions.options.length; i++) {
-    //     var choice = document.createElement("button");
-    //     // choice.textContent = quizQuestions[currentQuestion].options[i];
-    //     choice.onclick = userAnswer;
-    //     choices.appendChild(choice);
-
-
+  } else {
 
     // question
     questionTitle.innerHTML = quizQuestions[currentQuestion].question;
@@ -192,41 +207,52 @@ function startQuestions() {
     var opt3 = document.querySelector("#opt3");
     var opt4 = document.querySelector("#opt4");
 
-    opt1.textContent = "1. " + quizQuestions[currentQuestion].options[0];
-    opt2.textContent = "2. " + quizQuestions[currentQuestion].options[1];
-    opt3.textContent = "3. " + quizQuestions[currentQuestion].options[2];
-    opt4.textContent = "4. " + quizQuestions[currentQuestion].options[3];
+    opt1.textContent = quizQuestions[currentQuestion].options[0];
+    opt2.textContent = quizQuestions[currentQuestion].options[1];
+    opt3.textContent = quizQuestions[currentQuestion].options[2];
+    opt4.textContent = quizQuestions[currentQuestion].options[3];
 
-    var allOptions = ("#opt1", "#opt2", "#opt3", "#opt4");
-    allOptions.onclick = selectedAnswer();
+    // event listener for click
 
+    //  var choiceButtons = ["#opt1", "#opt2", "opt3", "opt4"];
+    //  choiceButtons.setAttribute("onclick='storeVar(userAnswer)'");
+  }
 }
 
 function displayMessage(type, message) {
-  feedbackMsg.classList.remove("feedback-hide");
-  feedbackMsg.textContent = message;
-    feedbackMsg.setAttribute("class", type);
-  }
+  var msgDiv = document.createElement("div");
+  msgDiv.textContent = message;
+  msgDiv.setAttribute("class", type);
+  questionScreen.appendChild(msgDiv)
+
+  clearTimeout(messageTimeout);
+  var messageTimeout = setTimeout(function () {
+    msgDiv.classList.add("hide");
+  }, 1000);
+
+}
 
 // check if answer is correct
-// function selectedAnswer() {
+questionScreen.addEventListener("click", function (event) {
 
-//     correctAnswer = quizQuestions[currentQuestion].answer;
+  userAnswer = event.target.textContent;
+  var correctAnswer = quizQuestions[currentQuestion].answer;
 
-//     if (correctAnswer === userAnswer)
-//     {
-//         displayMessage("Correct!");
-//         userScore + 10;
-        
-//     } else {
-//         userScore - 10;
-//         timerCount - 10;
-//         displayMessage("Wrong answer!")
-//     }
+  if (correctAnswer === userAnswer) {
+    displayMessage("pass", "Correct answer!")
+    userScore = userScore + 10; // not sure this works
 
-//     currentQuestion++;
-//     startQuestions();
-// }
+  } else {
+    userScore = userScore - 10; // not sure this works
+    timer - 10;
+    displayMessage("fail", "Wrong answer!")
+  }
+
+  currentQuestion++;
+  startQuestions();
+
+});
+
 
 // Attach event listener to start button to call startGame function on click
 
