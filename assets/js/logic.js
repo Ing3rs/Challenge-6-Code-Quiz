@@ -61,36 +61,45 @@ js files:
 
 
 
-// MY CODE
-
-// define variables
+// DEFINE VARIABLES
 
 var timerElement = document.querySelector("#time");
-var startButton = document.querySelector("#start");
-var questionsBlock = document.querySelector("#questions");
-var choices = document.querySelector("#choices"); // do I target the id or class?
-
 var startScreen = document.getElementById("start-screen");
-var questionScreen = document.querySelector("#question");
+var startButton = document.querySelector("#start");
+var questionScreen = document.querySelector("#questions");
+var questionTitle = document.querySelector("#question-title");
+var choices = document.querySelector("#choices"); // do I target the id or class?
 var endScreen = document.querySelector("#end-screen");
-var feedbackScreen = document.querySelector("#feedback");
-
+var feedbackMsg = document.querySelector("#feedback");
 var wrapper = document.querySelector(".wrapper");
 
-
+var currentQuestion = 0;
 var userScore = 0;
 var userAnswer = "";
 var isWin = false;
 var timer;
 var timerCount;
 
+// array for highscores to go into
+var highscoreRecords = [];
+
+
+// MAIN GAME FUNCTIONS
 
 // The startGame function is called when the start button is clicked
 function startGame() {
     isWin = false;
-    timerCount = 5;
+    timerCount = 75;
     startTimer();
-    // startQuestions();
+
+    // hide start screen
+    startScreen.classList.add("hide");
+
+    // show questions screen
+    questionScreen.classList.remove("hide");
+
+    // start questions
+    startQuestions();
 }
 
 
@@ -109,17 +118,17 @@ function loseGame() {
     startScreen.style.display = "none";
     var gameOver = document.createElement("h1");
     var retryButton = document.createElement("button");
-    var highscoresButton = document.createElement("button");
+    var highscoreButton = document.createElement("button");
 
     gameOver.textContent = "Game over - better luck next time!";
     retryButton.textContent = "Retry"; // needs to take user back to start
-    highscoresButton.textContent = "View highscores"; // needs to take user to highscore page
+    highscoreButton.textContent = "View highscores"; // needs to take user to highscore page
 
     // fix styling on all of the above
 
     wrapper.appendChild(gameOver);
     gameOver.appendChild(retryButton);
-    gameOver.appendChild(highscoresButton);
+    gameOver.appendChild(highscoreButton);
     
 }
 
@@ -150,33 +159,87 @@ function startTimer() {
   }
 
 
-// questions
-/*
-function startQuestions () {
-    // question one
 
-    // question two
+// QUESTIONS
 
-    // question three
+function startQuestions() {
+    
+    // check win?
+    // if (currentQuestion = quizQuestions.length && timer > 0) {
+    //     winGame();
+    // }
 
-    // question four
+    // // question
+    // questionTitle.innerHTML = quizQuestions[currentQuestion].question;
+
+    // // options
+    // choices.innerHTML = "";
+
+    // for (var i = 0; i < quizQuestions.options.length; i++) {
+    //     var choice = document.createElement("button");
+    //     // choice.textContent = quizQuestions[currentQuestion].options[i];
+    //     choice.onclick = userAnswer;
+    //     choices.appendChild(choice);
+
+
+
+    // question
+    questionTitle.innerHTML = quizQuestions[currentQuestion].question;
+
+    // choices
+    var opt1 = document.querySelector("#opt1");
+    var opt2 = document.querySelector("#opt2");
+    var opt3 = document.querySelector("#opt3");
+    var opt4 = document.querySelector("#opt4");
+
+    opt1.textContent = "1. " + quizQuestions[currentQuestion].options[0];
+    opt2.textContent = "2. " + quizQuestions[currentQuestion].options[1];
+    opt3.textContent = "3. " + quizQuestions[currentQuestion].options[2];
+    opt4.textContent = "4. " + quizQuestions[currentQuestion].options[3];
+
+    var allOptions = ("#opt1", "#opt2", "#opt3", "#opt4");
+    allOptions.onclick = selectedAnswer();
+
 }
-*/
+
+function displayMessage(type, message) {
+  feedbackMsg.classList.remove("feedback-hide");
+  feedbackMsg.textContent = message;
+    feedbackMsg.setAttribute("class", type);
+  }
+
+// check if answer is correct
+// function selectedAnswer() {
+
+//     correctAnswer = quizQuestions[currentQuestion].answer;
+
+//     if (correctAnswer === userAnswer)
+//     {
+//         displayMessage("Correct!");
+//         userScore + 10;
+        
+//     } else {
+//         userScore - 10;
+//         timerCount - 10;
+//         displayMessage("Wrong answer!")
+//     }
+
+//     currentQuestion++;
+//     startQuestions();
+// }
 
 // Attach event listener to start button to call startGame function on click
+
+
+// button event listeners
 startButton.addEventListener("click", startGame);
+// retryButton.addEventListener("click", startGame); not sure this is needed
+// nextQuestion.addEventListener("click", ??) not sure this ones needed
+// highscoreButton.addEventListener("click", ??) not sure this ones needed
 
 
 
+// HIGHSCORES
 
-
-/* CODE FROM WORD GAME: 
-
-
-// The init function is called when the page loads 
-function init() {
-    getWins();
-    getlosses();
-  }
-  
-*/
+// get highscores from local storage if there are any
+localStorage.getItem(highscoreRecords); // do I need to stringify the records?
