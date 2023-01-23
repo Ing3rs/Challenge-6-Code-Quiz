@@ -71,6 +71,7 @@ var questionTitle = document.querySelector("#question-title");
 var choices = document.querySelector("#choices"); // do I target the id or class?
 var endScreen = document.querySelector("#end-screen");
 var finalScore = document.querySelector("#final-score");
+var submitButton = document.querySelector("#submit");
 var feedbackScreen = document.querySelector("#feedback");
 var wrapper = document.querySelector(".wrapper");
 
@@ -81,8 +82,8 @@ var isWin = false;
 var timer;
 var timerCount;
 
-// array for highscores to go into
-var highscoreRecords = [];
+// object for highscores to go into
+var highscoreRecordsArray = [];
 
 
 // MAIN GAME FUNCTIONS
@@ -121,6 +122,8 @@ function winGame() {
 
   // display score
   finalScore.textContent = userScore;
+
+  // store initials and score
 
   // MISSING:
   // localstore function for initials and score
@@ -212,10 +215,6 @@ function startQuestions() {
     opt3.textContent = quizQuestions[currentQuestion].options[2];
     opt4.textContent = quizQuestions[currentQuestion].options[3];
 
-    // event listener for click
-
-    //  var choiceButtons = ["#opt1", "#opt2", "opt3", "opt4"];
-    //  choiceButtons.setAttribute("onclick='storeVar(userAnswer)'");
   }
 }
 
@@ -225,12 +224,21 @@ function displayMessage(type, message) {
   msgDiv.setAttribute("class", type);
   questionScreen.appendChild(msgDiv)
 
+  // remove message after 2 seconds to stop messages stacking up  
   clearTimeout(messageTimeout);
   var messageTimeout = setTimeout(function () {
     msgDiv.classList.add("hide");
-  }, 1000);
+  }, 2000);
 
 }
+
+// Highscores button goes to score.html
+function viewHighscores() {
+  window.location.href = 'highscores.html';
+};
+
+
+// EVENT LISTENERS
 
 // check if answer is correct
 questionScreen.addEventListener("click", function (event) {
@@ -240,12 +248,13 @@ questionScreen.addEventListener("click", function (event) {
 
   if (correctAnswer === userAnswer) {
     displayMessage("pass", "Correct answer!")
-    userScore = userScore + 10; // not sure this works
+    userScore = userScore + 10; // not sure this is working correctly
 
   } else {
-    userScore = userScore - 10; // not sure this works
-    timer - 10;
     displayMessage("fail", "Wrong answer!")
+    userScore = userScore - 10;
+    timerCount = timerCount - 10;
+    timerElement.textContent = timerCount;
   }
 
   currentQuestion++;
@@ -253,19 +262,47 @@ questionScreen.addEventListener("click", function (event) {
 
 });
 
-
-// Attach event listener to start button to call startGame function on click
-
-
-// button event listeners
+// start game on start button click
 startButton.addEventListener("click", startGame);
-// retryButton.addEventListener("click", startGame); not sure this is needed
-// nextQuestion.addEventListener("click", ??) not sure this ones needed
-// highscoreButton.addEventListener("click", ??) not sure this ones needed
+
+// store highscore details
+submitButton.addEventListener("click", function (event) {
+  event.preventDefault(); // not sure I need this?
+
+  var userInitials = document.querySelector("#initials").value;
+  userScore = userScore;
+
+  if (initials === "") { // if initials are blank, display message
+    displayMessage("error", "Please enter your initials");
+    return;
+
+  }
+
+  highscoreRecordsArray.push({
+    "initials": userInitials,
+    "score": userScore,
+  });
+
+  userInitials.value = ""; // don't think this works?
+  userScore = 0;
+
+  storeUserDetails()
+  viewHighscores()
 
 
+});
 
-// HIGHSCORES
+// store user initials and score
+function storeUserDetails() {
+  localStorage.setItem("highscoreRecordsArray", JSON.stringify(highscoreRecordsArray));
+}
 
-// get highscores from local storage if there are any
-localStorage.getItem(highscoreRecords); // do I need to stringify the records?
+// retrieve all user initials and scores
+function getStoredDetails() {
+  var storedHighscores = JSON.parse(localStorage.getItem("highscoreRecordsArray"));
+
+  if (storedHighscores !== null) {
+    highscoreRecordsArray = [];
+  }
+
+}
