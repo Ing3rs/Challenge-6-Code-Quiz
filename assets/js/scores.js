@@ -1,4 +1,5 @@
 // DEFINE VARIABLES
+// ----------------------------------------------------------------------
 
 var leaderboardArea = document.querySelector("#highscores");
 var leaderboardTitle = document.querySelectorAll("h1");
@@ -7,9 +8,15 @@ var clearScoresButtton = document.querySelector("#clear");
 
 var highscorers = [];
 
+// get stored highscores
 getStoredDetails()
 
-// HIGHSCORES
+// render leaderboard to display stored highscores
+renderLeaderboard()
+
+
+// FUNCTIONS
+// ----------------------------------------------------------------------
 
 // retrieve all user initials and scores
 function getStoredDetails() {
@@ -19,7 +26,6 @@ function getStoredDetails() {
         highscorers = storedHighscores;
     }
 
-    renderLeaderboard();
   }
 
 
@@ -41,5 +47,12 @@ function renderLeaderboard() {
 }
 
 
-// clear highscore leaderboard
+// EVENT LISTENERS
+// ----------------------------------------------------------------------
 
+// clear highscore leaderboard
+clearScoresButtton.addEventListener("click", function (event) {
+    highscorers = [];
+    leaderboardArea.innerHTML = "";
+    localStorage.removeItem("highscoreRecordsArray");
+});

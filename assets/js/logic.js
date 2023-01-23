@@ -62,13 +62,14 @@ js files:
 
 
 // DEFINE VARIABLES
+// ----------------------------------------------------------------------
 
 var timerElement = document.querySelector("#time");
 var startScreen = document.getElementById("start-screen");
 var startButton = document.querySelector("#start");
 var questionScreen = document.querySelector("#questions");
 var questionTitle = document.querySelector("#question-title");
-var choices = document.querySelector("#choices"); // do I target the id or class?
+var choices = document.querySelector("#choices");
 var endScreen = document.querySelector("#end-screen");
 var finalScore = document.querySelector("#final-score");
 var submitButton = document.querySelector("#submit");
@@ -85,8 +86,12 @@ var timerCount;
 // object for highscores to go into
 var highscoreRecordsArray = [];
 
+// get stored highscores
+getStoredDetails();
 
-// MAIN GAME FUNCTIONS
+
+// BASE GAME FUNCTIONS
+// ----------------------------------------------------------------------
 
 // The startGame function is called when the start button is clicked
 function startGame() {
@@ -122,13 +127,6 @@ function winGame() {
 
   // display score
   finalScore.textContent = userScore;
-
-  // store initials and score
-
-  // MISSING:
-  // localstore function for initials and score
-  // push to highscoreRecords array with comma
-  // submit button goes to highscores
 
 }
 
@@ -189,8 +187,10 @@ function startTimer() {
 
 
 
-// QUESTIONS
+// MAIN GAME FUNCTIONS
+// ----------------------------------------------------------------------
 
+// construct questions
 function startQuestions() {
 
   // check win
@@ -218,6 +218,7 @@ function startQuestions() {
   }
 }
 
+// display message
 function displayMessage(type, message) {
   var msgDiv = document.createElement("div");
   msgDiv.textContent = message;
@@ -232,13 +233,36 @@ function displayMessage(type, message) {
 
 }
 
+
 // Highscores button goes to score.html
 function viewHighscores() {
   window.location.href = 'highscores.html';
 };
 
 
+// store user initials and score
+function storeUserDetails() {
+  localStorage.setItem("highscoreRecordsArray", JSON.stringify(highscoreRecordsArray));
+}
+
+
+// retrieve all user initials and scores
+function getStoredDetails() {
+  var storedHighscores = JSON.parse(localStorage.getItem("highscoreRecordsArray"));
+  
+  if (storedHighscores !== null) {
+      highscoreRecordsArray = storedHighscores;
+  }
+
+}
+
+
 // EVENT LISTENERS
+// ----------------------------------------------------------------------
+
+// start game on start button click
+startButton.addEventListener("click", startGame);
+
 
 // check if answer is correct
 questionScreen.addEventListener("click", function (event) {
@@ -262,8 +286,6 @@ questionScreen.addEventListener("click", function (event) {
 
 });
 
-// start game on start button click
-startButton.addEventListener("click", startGame);
 
 // store highscore details
 submitButton.addEventListener("click", function (event) {
@@ -272,12 +294,14 @@ submitButton.addEventListener("click", function (event) {
   var userInitials = document.querySelector("#initials").value;
   userScore = userScore;
 
-  if (initials === "") { // if initials are blank, display message
+  // if initials are blank, display message - THIS DOESN'T WORK
+  if (initials === "") { 
     displayMessage("error", "Please enter your initials");
     return;
 
   }
 
+  // push intials and score to array
   highscoreRecordsArray.push({
     "initials": userInitials,
     "score": userScore,
@@ -287,22 +311,8 @@ submitButton.addEventListener("click", function (event) {
   userScore = 0;
 
   storeUserDetails()
+
+  // open highscore page
   viewHighscores()
 
-
 });
-
-// store user initials and score
-function storeUserDetails() {
-  localStorage.setItem("highscoreRecordsArray", JSON.stringify(highscoreRecordsArray));
-}
-
-// retrieve all user initials and scores
-function getStoredDetails() {
-  var storedHighscores = JSON.parse(localStorage.getItem("highscoreRecordsArray"));
-
-  if (storedHighscores !== null) {
-    highscoreRecordsArray = [];
-  }
-
-}
