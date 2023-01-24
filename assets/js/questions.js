@@ -27,7 +27,7 @@ var quizQuestions = [
 
     {
         question: "JavaScript is the same as Java.",
-        options: ["True", "False"],
+        options: ["True", "False", "Maybe?", "I don't know..."],
         answer: "False"
     }
     

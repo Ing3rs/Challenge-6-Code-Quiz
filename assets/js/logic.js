@@ -1,66 +1,3 @@
-// NOTES
-
-/*
-
-start with event listener when start quiz is clicked
-this should start timer and questions
-
-hiding and removing elements from the page
-
-use word guessing game for help as it is similar - reuse some of the code
-
-js files: 
-    > questions (holds questions)
-    > qlogic (holds all main code)
-    > qscores (holds high scores)
-
-*/
-
-// ---------------------------------------------------------------------------------------
-
-// PSEUDOCODE
-// ----------
-
-// Objective - timed coding quiz with multiple-choice questions, that store high scores
-
-// 5 quiz questions in questions.js file
-
-// separate page containing high scores
-// link in top left
-// lists all highscores
-// 1. AB - 22 points
-// buttons > go back, clear highscores
-// go back button takes user to start of quiz
-// clear highscores button - clear localstorage
-
-// 75 second timer
-// game over when reaches 0 and user hasn't finished
-
-// Start quiz button
-// on click, start timer and take user to first question
-// lists question
-// lists answers as buttons
-// hover effect on button
-// clicking answer goes to next question
-// if wrong answer -10 secs, update score, go to next question
-// if right answer update score, go to next question
-// display 'correct' or 'wrong' below options on following question
-
-// if user answers all questions within time limit: 
-/* All Done!
-   Your final score is xx
-   Enter initials: [box] [submit button]
-        > on submit, go to highscore page */
-// store users score
-
-// if user does not answer all questions within time limit: 
-// Game over
-// Buttons - retry and View highscores
-
-// --------------------------------------------------------------------------
-
-
-
 // DEFINE VARIABLES
 // ----------------------------------------------------------------------
 
@@ -140,22 +77,40 @@ function loseGame() {
   // hide questions screen
   questionScreen.classList.add("hide");
 
-  // show feedback screen
-  feedbackScreen.classList.remove("feedback-hide");
-
-  var gameOver = document.createElement("h1");
+    // create elements to contain page contents
+  var gameOverDiv = document.createElement("div");
+  // var gamesOverTitle = document.createElement("h1");
+  var gameOverGif = document.createElement("img");
+  var gameOverText = document.createElement("p");
   var retryButton = document.createElement("button");
   var highscoreButton = document.createElement("button");
 
-  gameOver.textContent = "Game over - better luck next time!";
-  retryButton.textContent = "Retry"; // needs to take user back to start
-  highscoreButton.textContent = "View highscores"; // needs to take user to highscore page
+  // set element attributes (styling etc.)
+  gameOverDiv.setAttribute("style", "text-align: center");
+  gameOverGif.setAttribute("src", "assets/images/game-over-gif.gif");
+  gameOverGif.setAttribute("style", "margin: 25px;");
 
-  // fix styling on all of the above
+  // game over text
+  gameOverText.textContent = "Better luck next time!";
+  retryButton.textContent = "Retry";
+  highscoreButton.textContent = "View highscores";
 
-  wrapper.appendChild(gameOver); // why doesn't feedbackScreen work?
-  gameOver.appendChild(retryButton);
-  gameOver.appendChild(highscoreButton);
+  // retry button restarts the quiz
+  retryButton.addEventListener("click", function (event) {
+    // hide game over screen and restart game
+    gameOverDiv.classList.add("hide");
+    startGame();
+  });
+
+  // highscore button opens highscores page
+  highscoreButton.addEventListener("click", viewHighscores);
+
+  // append all elements to main wrapper and div
+  wrapper.appendChild(gameOverDiv);
+  gameOverDiv.appendChild(gameOverGif)
+  gameOverDiv.appendChild(gameOverText)
+  gameOverDiv.appendChild(retryButton);
+  gameOverDiv.appendChild(highscoreButton);
 
 }
 
@@ -210,6 +165,7 @@ function startQuestions() {
     var opt3 = document.querySelector("#opt3");
     var opt4 = document.querySelector("#opt4");
 
+    // choice content
     opt1.textContent = quizQuestions[currentQuestion].options[0];
     opt2.textContent = quizQuestions[currentQuestion].options[1];
     opt3.textContent = quizQuestions[currentQuestion].options[2];
@@ -249,9 +205,9 @@ function storeUserDetails() {
 // retrieve all user initials and scores
 function getStoredDetails() {
   var storedHighscores = JSON.parse(localStorage.getItem("highscoreRecordsArray"));
-  
+
   if (storedHighscores !== null) {
-      highscoreRecordsArray = storedHighscores;
+    highscoreRecordsArray = storedHighscores;
   }
 
 }
@@ -271,12 +227,15 @@ questionScreen.addEventListener("click", function (event) {
   var correctAnswer = quizQuestions[currentQuestion].answer;
 
   if (correctAnswer === userAnswer) {
+
+    // +10 points for correct answer
     displayMessage("pass", "Correct answer!")
-    userScore = userScore + 10; // not sure this is working correctly
+    userScore = userScore + 10;
 
   } else {
+
+    // add 0 points and -10 seconds from timer if incorrect answer
     displayMessage("fail", "Wrong answer!")
-    userScore = userScore - 10;
     timerCount = timerCount - 10;
     timerElement.textContent = timerCount;
   }
@@ -295,7 +254,7 @@ submitButton.addEventListener("click", function (event) {
   userScore = userScore;
 
   // if initials are blank, display message - THIS DOESN'T WORK
-  if (initials === "") { 
+  if (initials === "") {
     displayMessage("error", "Please enter your initials");
     return;
 

@@ -5,7 +5,6 @@ var leaderboardArea = document.querySelector("#highscores");
 var leaderboardTitle = document.querySelectorAll("h1");
 var clearScoresButtton = document.querySelector("#clear");
 
-
 var highscorers = [];
 
 // get stored highscores
